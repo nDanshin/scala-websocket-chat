@@ -1,6 +1,6 @@
 package chat.api.domain.authentification
 
-import chat.api.domain.users.User
+import chat.api.domain.users.CreateUser
 import tsec.passwordhashers.PasswordHash
 
 final case class LoginRequest(userName: String,
@@ -12,12 +12,11 @@ final case class SignupRequest(userName: String,
                                email: String,
                                password: String) {
 
-  def asUser[A](hashedPassword: PasswordHash[A]): User = User(
+  def asCreateUser[A](hashedPassword: PasswordHash[A]): CreateUser = CreateUser(
     userName = userName,
     firstName = firstName,
     lastName = lastName,
     email = email,
-    hash = hashedPassword,
-    id = None
+    hash = hashedPassword
   )
 }

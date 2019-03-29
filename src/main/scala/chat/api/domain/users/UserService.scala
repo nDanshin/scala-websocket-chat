@@ -7,8 +7,8 @@ import chat.api.domain.{UserAlreadyExistsError, UserNotFoundError}
 
 class UserService[F[_]: Monad](repo: UserRepositoryAlgebra[F], validation: UserValidationAlgebra[F]) {
 
-  def createUser(user: User): EitherT[F, UserAlreadyExistsError, User] = for {
-    _ <- validation.doesNotExist(user)
+  def createUser(user: CreateUser): EitherT[F, UserAlreadyExistsError, User] = for {
+    _ <- validation.doesNotExist(user.userName)
     saved <- EitherT.liftF(repo.create(user))
   } yield saved
 
@@ -26,8 +26,6 @@ class UserService[F[_]: Monad](repo: UserRepositoryAlgebra[F], validation: UserV
     _ <- validation.exists(user.id)
     saved <- EitherT.fromOptionF(repo.update(user), UserNotFoundError)
   } yield saved
-
-  //def list:
 }
 
 object UserService {

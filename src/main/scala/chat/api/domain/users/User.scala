@@ -5,4 +5,4 @@ case class User(userName: String,
                 lastName: String,
                 email: String,
                 hash: String,
-                id: Option[Long])
+                id: Long)

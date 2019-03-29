@@ -35,7 +35,7 @@ class UserEndpoints[F[_]: Effect, A] extends Http4sDsl[F] {
           user <- userService.getUserByName(name).leftMap(_ => UserAuthenticationFailedError(name))
           checkResult <- EitherT.liftF(cryptService.checkpw(login.password, PasswordHash[A](user.hash)))
           resp <-
-            if(checkResult == Verified) EitherT.rightT[F, UserAuthenticationFailedError](user)
+            if (checkResult == Verified) EitherT.rightT[F, UserAuthenticationFailedError](user)
             else EitherT.leftT[F, User](UserAuthenticationFailedError(name))
         } yield resp
 
@@ -51,8 +51,8 @@ class UserEndpoints[F[_]: Effect, A] extends Http4sDsl[F] {
         val action = for {
           signup <- req.as[SignupRequest]
           hash <- cryptService.hashpw(signup.password)
-          user <- signup.asUser(hash).pure[F]
-          result <- userService.createUser(user).value
+          createUser <- signup.asCreateUser(hash).pure[F]
+          result <- userService.createUser(createUser).value
         } yield result
 
         action.flatMap {
@@ -101,7 +101,7 @@ class UserEndpoints[F[_]: Effect, A] extends Http4sDsl[F] {
 }
 
 object UserEndpoints {
-  def endpoints[F[_] : Effect, A](userService: UserService[F],
-                                  cryptService: PasswordHasher[F, A]): HttpRoutes[F] =
+  def endpoints[F[_]: Effect, A](userService: UserService[F],
+                                 cryptService: PasswordHasher[F, A]): HttpRoutes[F] =
     new UserEndpoints[F, A].endpoints(userService, cryptService)
 }
