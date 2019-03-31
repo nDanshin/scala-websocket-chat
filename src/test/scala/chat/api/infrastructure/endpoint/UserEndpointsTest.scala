@@ -2,15 +2,14 @@ package chat.api.infrastructure.endpoint
 
 import cats.data.EitherT
 import cats.effect.IO
-import chat.api.domain.UserAlreadyExistsError
+import chat.api.domain.{UserAlreadyExistsError, UserNotFoundError}
 import chat.api.domain.authentification.SignupRequest
 import chat.api.domain.users.{CreateUser, User, UserService}
 import chat.api.utils.TestProtocol
 import io.circe.generic.auto._
 import org.http4s.{EntityEncoder, Request, Uri}
 import org.http4s.circe.jsonEncoderOf
-import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.dsl._
+import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits.http4sKleisliResponseSyntax
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -25,11 +24,11 @@ class UserEndpointsTest
     with MockitoSugar
     with ScalaCheckPropertyChecks
     with TestProtocol
-    with Http4sDsl[IO]
-    with Http4sClientDsl[IO] {
+    with Http4sDsl[IO] {
 
   trait mocks {
     implicit val signupRequestEnc: EntityEncoder[IO, SignupRequest] = jsonEncoderOf
+    implicit val userEnc: EntityEncoder[IO, User] = jsonEncoderOf
 
     val password = "pass"
     val passwordHash = PasswordHash[BCrypt]("hash")
@@ -66,10 +65,30 @@ class UserEndpointsTest
       """.stripMargin)
   }
 
-  /*
-    it should "update user"
+  "login endpoint" should "login user" in new mocks {}
 
-    it should "get user by userName"
+    it should "update user" in new mocks {
+      val request = Request(PUT, Uri.uri("/users/123")).withEntity(user.copy(id = 555))
 
-    it should "delete user by userName"*/
+      when(userService.update(user)).thenReturn(EitherT.rightT[IO, UserNotFoundError.type ](user))
+
+      val response = userHttpService.run(request).unsafeRunSync
+
+      response.status shouldBe Ok
+      testJsonProtocol(response,
+        """
+          |{
+          |  "userName":"userName",
+          |  "firstName":"firstName",
+          |  "lastName":"lastName",
+          |  "email":"test@test.com",
+          |  "hash":"hash",
+          |  "id":123
+          |}
+        """.stripMargin)
+    }
+
+    it should "get user by userName" in new mocks {}
+
+    it should "delete user by userName" in new mocks {}
 }

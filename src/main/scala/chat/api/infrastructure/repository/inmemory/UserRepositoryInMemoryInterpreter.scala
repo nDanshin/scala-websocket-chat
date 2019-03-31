@@ -19,9 +19,9 @@ class UserRepositoryInMemoryInterpreter[F[_]: Applicative] extends UserRepositor
 
   override def update(user: User): F[Option[User]] = cache.replace(user.id, user).map(_ => user).pure[F]
 
-  override def get(userId: Long): F[Option[User]] = cache.get(userId).pure[F]
+  override def get(userId: User.Id): F[Option[User]] = cache.get(userId).pure[F]
 
-  override def delete(userId: Long): F[Option[User]] = cache.remove(userId).pure[F]
+  override def delete(userId: User.Id): F[Option[User]] = cache.remove(userId).pure[F]
 
   override def findByUserName(userName: String): F[Option[User]] =
     cache.values.find(user => user.userName == userName).pure[F]

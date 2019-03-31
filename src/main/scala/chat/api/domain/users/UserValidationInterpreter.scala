@@ -13,7 +13,7 @@ class UserValidationInterpreter[F[_]: Monad](userRepo: UserRepositoryAlgebra[F])
     }
   }
 
-  override def exists(userId: Long): EitherT[F, UserNotFoundError.type, Unit] = EitherT {
+  override def exists(userId: User.Id): EitherT[F, UserNotFoundError.type, Unit] = EitherT {
     userRepo.get(userId).map {
       case Some(_) => Right(())
       case _ => Left(UserNotFoundError)

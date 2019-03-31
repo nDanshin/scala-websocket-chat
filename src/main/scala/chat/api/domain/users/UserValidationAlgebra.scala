@@ -5,5 +5,5 @@ import chat.api.domain.{UserAlreadyExistsError, UserNotFoundError}
 
 trait UserValidationAlgebra[F[_]] {
   def doesNotExist(userName: String): EitherT[F, UserAlreadyExistsError, Unit]
-  def exists(userId: Long): EitherT[F, UserNotFoundError.type, Unit]
+  def exists(userId: User.Id): EitherT[F, UserNotFoundError.type, Unit]
 }

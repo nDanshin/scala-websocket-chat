@@ -5,8 +5,7 @@ import cats.effect.Effect
 import cats.implicits.toFunctorOps
 import cats.implicits.toFlatMapOps
 import cats.implicits.catsSyntaxApplicativeId
-//import cats.implicits.toSemigroupKOps for route binding
-import cats.implicits.toSemigroupKOps
+import cats.syntax.semigroupk._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
@@ -64,10 +63,10 @@ class UserEndpoints[F[_]: Effect, A] extends Http4sDsl[F] {
 
   private def updateEndpoint(userService: UserService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case req @ PUT -> Root / "users" / name =>
+      case req @ PUT -> Root / "users" / LongVar(userId) =>
         val action = for {
           user <- req.as[User]
-          updated = user.copy(userName = name)
+          updated = user.copy(id = User.Id @@ userId)
           result <- userService.update(updated).value
         } yield result
 
