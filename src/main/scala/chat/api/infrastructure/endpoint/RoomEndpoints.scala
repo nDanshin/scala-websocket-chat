@@ -1,28 +1,30 @@
 package chat.api.infrastructure.endpoint
 
-import cats.data.{EitherT, Nested}
 import cats.effect.Effect
 import cats.syntax.functor._
 import cats.syntax.flatMap._
-import cats.syntax.applicative._
 import cats.syntax.semigroupk._
-import chat.api.domain.{RoomAlreadyExistsError, ValidationError}
+import cats.syntax.bifunctor._
+import chat.api.domain.{RoomAlreadyExistsError, UserNotFoundError, ValidationError}
 import chat.api.domain.rooms.{CreateRoom, Room, RoomService}
 import chat.api.domain.users.{User, UserService}
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
-import org.http4s.{EntityDecoder, HttpRoutes}
+import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes}
 import org.http4s.dsl.Http4sDsl
+
+import scala.language.higherKinds
 
 class RoomEndpoints[F[_]: Effect] extends Http4sDsl[F] {
 
   implicit val roomDecoder: EntityDecoder[F, Room] = jsonOf
+  implicit val roomEncoder: EntityEncoder[F, Room] = jsonEncoderOf
+  implicit val roomsEncoder: EntityEncoder[F, List[Room]] = jsonEncoderOf
   implicit val createRoomDecoder: EntityDecoder[F, CreateRoom] = jsonOf
 
-
-  private def createRoomEndpoint(userService: UserService[F],
-                                 roomService: RoomService[F]): HttpRoutes[F] =
+  private def createRoomEndpoint(roomService: RoomService[F],
+                                 userService: UserService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ POST -> Root / "rooms"  =>
         val action = for {
@@ -43,41 +45,57 @@ class RoomEndpoints[F[_]: Effect] extends Http4sDsl[F] {
     HttpRoutes.of[F] {
       case PUT -> Root / "rooms" / "users" / LongVar(roomId) / LongVar(userId) =>
         val action = for {
-          room <- roomService.getRoom(Room.Id @@ roomId)
-          user <- userService.getUser(User.Id @@ userId)
-          update = room.copy(members = user.id +: room.members)
-          result <- roomService.update(room).value
+          room <- roomService.getRoom(Room.Id @@ roomId).leftWiden[ValidationError]
+          user <- userService.getUser(User.Id @@ userId).leftWiden[ValidationError]
+          joined = room.copy(members = user.id +: room.members)
+          result <- roomService.update(joined).leftWiden[ValidationError]
         } yield result
 
-        action.flatMap {
-          case Right() =>
-          case Left() =>
+        action.value.flatMap {
+          case Right(joined) => Ok(joined.asJson)
+          case _ => NotFound("Room or user not found")
         }
-
-
     }
 
-  private def leaveRoomEndpoint(): HttpRoutes[F] =
+  private def leaveRoomEndpoint(roomService: RoomService[F],
+                                userService: UserService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case DELETE -> Root / "rooms" / "users" / LongVar(roomId) / LongVar(userId)
+      case DELETE -> Root / "rooms" / "users" / LongVar(roomId) / LongVar(userId) =>
+        val action = for {
+          room <- roomService.getRoom(Room.Id @@ roomId).leftWiden[ValidationError]
+          user <- userService.getUser(User.Id @@ userId).leftWiden[ValidationError]
+          lefted = room.copy(members = room.members.filterNot(_ == user.id))
+          result <- roomService.update(lefted).leftWiden[ValidationError]
+        } yield result
+
+        action.value.flatMap {
+          case Right(lefted) => Ok(lefted.asJson)
+          case _ => NotFound("Room or user not found")
+        }
     }
 
-  private def userRoomsEndpoint(): HttpRoutes[F] =
+  private def userRoomsEndpoint(roomService: RoomService[F],
+                                userService: UserService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case GET -> Root / "users" / "rooms" / LongVar(userId)
+      case GET -> Root / "users" / "rooms" / LongVar(userId) =>
+        userService.getUser(User.Id @@ userId).value.flatMap {
+          case Right(user) => roomService.getUserRooms(user).flatMap(rooms => Ok(rooms))
+          case Left(UserNotFoundError) => NotFound("User not found")
+        }
     }
 
-  private def deleteRoomEndpoint(): HttpRoutes[F] =
+  private def deleteRoomEndpoint(roomService: RoomService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case DELETE -> Root / "rooms" / LongVar(roomId)
+      case DELETE -> Root / "rooms" / LongVar(roomId) =>
+        roomService.deleteRoom(Room.Id @@ roomId).flatMap(_ => Ok())
     }
 
   def endpoints(roomService: RoomService[F], userService: UserService[F]): HttpRoutes[F] =
-    createRoomEndpoint(???, ???) <+>
-    joinRoomEndpoint() <+>
-    leaveRoomEndpoint() <+>
-    userRoomsEndpoint() <+>
-    deleteRoomEndpoint()
+    createRoomEndpoint(roomService, userService) <+>
+    joinRoomEndpoint(roomService, userService) <+>
+    leaveRoomEndpoint(roomService, userService) <+>
+    userRoomsEndpoint(roomService, userService) <+>
+    deleteRoomEndpoint(roomService)
 }
 
 object RoomEndpoints {

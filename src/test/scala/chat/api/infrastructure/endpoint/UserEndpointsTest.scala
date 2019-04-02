@@ -32,7 +32,7 @@ class UserEndpointsTest
 
     val password = "pass"
     val passwordHash = PasswordHash[BCrypt]("hash")
-    val user = User("userName", "firstName", "lastName", "test@test.com", passwordHash, 123)
+    val user = User("userName", "firstName", "lastName", "test@test.com", passwordHash, User.Id @@ 123l)
 
     val userService = mock[UserService[IO]]
     val cryptService = mock[PasswordHasher[IO, BCrypt]]
@@ -68,7 +68,7 @@ class UserEndpointsTest
   "login endpoint" should "login user" in new mocks {}
 
     it should "update user" in new mocks {
-      val request = Request(PUT, Uri.uri("/users/123")).withEntity(user.copy(id = 555))
+      val request = Request(PUT, Uri.uri("/users/123")).withEntity(user.copy(id = User.Id @@ 555l))
 
       when(userService.update(user)).thenReturn(EitherT.rightT[IO, UserNotFoundError.type ](user))
 

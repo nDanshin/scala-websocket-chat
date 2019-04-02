@@ -4,9 +4,10 @@ import config._
 import cats.effect._
 import cats.implicits._
 import chat.api.config.ChatConfig
+import chat.api.domain.rooms.{RoomService, RoomValidationInterpreter}
 import chat.api.domain.users.{UserService, UserValidationInterpreter}
-import chat.api.infrastructure.endpoint.UserEndpoints
-import chat.api.infrastructure.repository.inmemory.UserRepositoryInMemoryInterpreter
+import chat.api.infrastructure.endpoint.{RoomEndpoints, UserEndpoints}
+import chat.api.infrastructure.repository.inmemory.{RoomRepositoryInMemoryInterpreter, UserRepositoryInMemoryInterpreter}
 import io.circe.config.parser
 import org.http4s.server.{Router, Server => H4Server}
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -22,10 +23,14 @@ object Server extends IOApp {
       roomRepo =  ???
       messagesRepo =  ???
       */
+      roomRepo       = RoomRepositoryInMemoryInterpreter[F]()
+      roomValidation = RoomValidationInterpreter[F](roomRepo)
+      roomService    = RoomService[F](roomRepo, roomValidation)
       userRepo       = UserRepositoryInMemoryInterpreter[F]()
       userValidation = UserValidationInterpreter[F](userRepo)
       userService    = UserService[F](userRepo, userValidation)
-      services       = UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F])
+      services       = RoomEndpoints.endpoints[F](roomService, userService) <+>
+        UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F])
       httpApp  = Router("/" -> services).orNotFound
 
       server <- BlazeServerBuilder[F]

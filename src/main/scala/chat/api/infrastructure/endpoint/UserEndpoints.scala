@@ -10,7 +10,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{EntityDecoder, HttpRoutes}
+import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes}
 
 import scala.language.higherKinds
 import chat.api.domain._
@@ -22,6 +22,7 @@ import tsec.passwordhashers.{PasswordHash, PasswordHasher}
 class UserEndpoints[F[_]: Effect, A] extends Http4sDsl[F] {
 
   implicit val userDecoder: EntityDecoder[F, User] = jsonOf
+  implicit val userEncoder: EntityEncoder[F, User] = jsonEncoderOf
   implicit val loginRequestDecoder: EntityDecoder[F, LoginRequest] = jsonOf
   implicit val signUpRequestDecoder: EntityDecoder[F, SignupRequest] = jsonOf
 

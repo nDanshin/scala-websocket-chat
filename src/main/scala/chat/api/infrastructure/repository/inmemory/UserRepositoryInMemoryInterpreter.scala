@@ -7,11 +7,11 @@ import scala.collection.concurrent.TrieMap
 import scala.util.Random
 
 class UserRepositoryInMemoryInterpreter[F[_]: Applicative] extends UserRepositoryAlgebra[F] {
-  private val cache = new TrieMap[Long, User]
+  private val cache = new TrieMap[User.Id, User]
   private val random = new Random
 
   override def create(user: CreateUser): F[User] = {
-    val id = random.nextLong
+    val id = User.Id @@ random.nextLong
     val toSave = User(user.userName, user.firstName, user.lastName, user.email, user.hash, id)
     cache += (id -> toSave)
     toSave.pure[F]
@@ -24,7 +24,7 @@ class UserRepositoryInMemoryInterpreter[F[_]: Applicative] extends UserRepositor
   override def delete(userId: User.Id): F[Option[User]] = cache.remove(userId).pure[F]
 
   override def findByUserName(userName: String): F[Option[User]] =
-    cache.values.find(user => user.userName == userName).pure[F]
+    cache.values.find(_.userName == userName).pure[F]
 
   override def deleteByUserName(userName: String): F[Option[User]] = cache.values
     .find(_.userName == userName)
