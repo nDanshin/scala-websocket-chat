@@ -19,7 +19,7 @@ class RoomRepositoryInMemoryInterpreter[F[_]: Applicative] extends RoomRepositor
     toSave.pure[F]
   }
 
-  override def update(room: Room): F[Option[Room]] = cache.replace(room.id, room).pure[F]
+  override def update(room: Room): F[Option[Room]] = cache.replace(room.id, room).map(_ => room).pure[F]
 
   override def get(roomId: Room.Id): F[Option[Room]] = cache.get(roomId).pure[F]
 
