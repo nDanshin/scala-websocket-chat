@@ -4,11 +4,12 @@ import config._
 import cats.effect._
 import cats.implicits._
 import chat.api.config.ChatConfig
-import chat.api.domain.messages.MessageService
+import chat.api.domain.messages.{Message, MessageService}
 import chat.api.domain.rooms.{RoomService, RoomValidationInterpreter}
 import chat.api.domain.users.{UserService, UserValidationInterpreter}
-import chat.api.infrastructure.endpoint.{MessageEndpoints, RoomEndpoints, UserEndpoints}
+import chat.api.infrastructure.endpoint.{MessageEndpoints, RoomEndpoints, UserEndpoints, WebsocketEndpoints}
 import chat.api.infrastructure.repository.inmemory.{MessageRepositoryInMemoryInterpreter, RoomRepositoryInMemoryInterpreter, UserRepositoryInMemoryInterpreter}
+import fs2.concurrent.Topic
 import io.circe.config.parser
 import org.http4s.server.{Router, Server => H4Server}
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -16,8 +17,9 @@ import org.http4s.implicits._
 import tsec.passwordhashers.jca.BCrypt
 
 object Server extends IOApp {
-  def createServer[F[_] : ContextShift : ConcurrentEffect : Timer]: Resource[F, H4Server[F]] = for {
+  def createServer[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, H4Server[F]] = for {
     conf           <- Resource.liftF(parser.decodePathF[F, ChatConfig]("chat-api"))
+    messageTopic   <- Resource.liftF(Topic[F, Message](Message.empty))
 
     roomRepo       = RoomRepositoryInMemoryInterpreter[F]()
     userRepo       = UserRepositoryInMemoryInterpreter[F]()
@@ -28,14 +30,16 @@ object Server extends IOApp {
 
     roomService    = RoomService[F](roomRepo, roomValidation)
     userService    = UserService[F](userRepo, userValidation)
-    messageService = MessageService[F](messageRepo, userValidation, roomValidation)
+    messageService = MessageService[F](messageRepo, userValidation, roomValidation, messageTopic)
 
     services       = RoomEndpoints.endpoints[F](roomService, userService) <+>
       MessageEndpoints.endpoints[F](messageService, userService, roomService) <+>
-      UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F])
+      UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F]) <+>
+      WebsocketEndpoints.endpoints[F](messageService)
 
     httpApp  = Router("/" -> services).orNotFound
     server <- BlazeServerBuilder[F]
+      .withWebSockets(true)
       .bindHttp(conf.server.port, conf.server.host)
       .withHttpApp(httpApp)
       .resource

@@ -1,6 +1,6 @@
 package chat.api.infrastructure.endpoint
 
-import cats.effect.Effect
+import cats.effect._
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import cats.syntax.semigroupk._
