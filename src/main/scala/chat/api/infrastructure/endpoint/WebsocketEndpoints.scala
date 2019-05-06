@@ -24,9 +24,9 @@ class WebsocketEndpoints[F[_]: ConcurrentEffect: Timer] extends Http4sDsl[F] {
 
   private def openWebsocketEndpoint(messageService: MessageService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case GET -> Root / "ws" =>
+      case GET -> Root / "ws" / LongVar(userId) =>
         val send: Stream[F, WebSocketFrame] =
-          messageService.subscribe(User.Id @@ 1l).map(msg => Text(msg.asJson.toString))
+          messageService.subscribe(User.Id @@ userId).map(msg => Text(msg.asJson.toString))
 
         val receive: Pipe[F, WebSocketFrame, Unit] = _.evalMap {
           case Text(t, _) => println(t).pure[F]
@@ -44,7 +44,3 @@ object WebsocketEndpoints {
   def endpoints[F[_]: ConcurrentEffect: Timer](messageService: MessageService[F]): HttpRoutes[F] =
     new WebsocketEndpoints[F].endpoints(messageService)
 }
-
-//Stream.awakeEvery[F](1.seconds).map(d => Text(s"Ping! $d"))
-
-

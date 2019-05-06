@@ -30,7 +30,7 @@ object Server extends IOApp {
 
     roomService    = RoomService[F](roomRepo, roomValidation)
     userService    = UserService[F](userRepo, userValidation)
-    messageService = MessageService[F](messageRepo, userValidation, roomValidation, messageTopic)
+    messageService = MessageService[F](messageRepo, userValidation, roomValidation, roomRepo, messageTopic)
 
     services       = RoomEndpoints.endpoints[F](roomService, userService) <+>
       MessageEndpoints.endpoints[F](messageService, userService, roomService) <+>
@@ -44,7 +44,7 @@ object Server extends IOApp {
       .withHttpApp(httpApp)
       .resource
 
-    } yield server
+  } yield server
 
   def run(args: List[String]): IO[ExitCode] = createServer.use(_ => IO.never).as(ExitCode.Success)
 }
