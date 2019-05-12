@@ -6,7 +6,6 @@ import io.circe.{Decoder, Encoder}
 
 case class Room(id: Room.Id,
                 name: String,
-                //roomType: RoomType,
                 members: List[User.Id])
 
 object Room extends Entity[Long] {

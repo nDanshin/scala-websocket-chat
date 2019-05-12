@@ -27,19 +27,18 @@ libraryDependencies ++= Seq(
   "io.circe"              %% "circe-parser"           % CirceVersion,
   "io.circe"              %% "circe-java8"            % CirceVersion,
   "io.circe"              %% "circe-config"           % CirceConfigVersion,
-  //"org.tpolecat"          %% "doobie-core"            % DoobieVersion,
-  //"org.tpolecat"          %% "doobie-h2"              % DoobieVersion,
-  //"org.tpolecat"          %% "doobie-scalatest"       % DoobieVersion,
-  //"org.tpolecat"          %% "doobie-hikari"          % DoobieVersion,
+  "org.tpolecat"          %% "doobie-core"            % DoobieVersion,
+  "org.tpolecat"          %% "doobie-postgres"        % DoobieVersion,
+  "org.tpolecat"          %% "doobie-scalatest"       % DoobieVersion,
+  "org.tpolecat"          %% "doobie-hikari"          % DoobieVersion,
   "com.beachape"          %% "enumeratum-circe"       % EnumeratumCirceVersion,
-  //"com.h2database"        %  "h2"                     % H2Version, //todo: h2 поменять на норм
   "org.http4s"            %% "http4s-blaze-server"    % Http4sVersion,
   "org.http4s"            %% "http4s-circe"           % Http4sVersion,
   "org.http4s"            %% "http4s-dsl"             % Http4sVersion,
   "ch.qos.logback"        %  "logback-classic"        % LogbackVersion,
-  //"org.flywaydb"          %  "flyway-core"            % FlywayVersion, //todo: миграции, скорее всего удалить
-  "org.http4s"            %% "http4s-blaze-client"    % Http4sVersion     % Test,
+  "org.flywaydb"          %  "flyway-core"            % FlywayVersion,
   "org.rudogma"           %% "supertagged"            % supertagged,
+  "org.http4s"            %% "http4s-blaze-client"    % Http4sVersion     % Test,
   "org.scalacheck"        %% "scalacheck"             % ScalaCheckVersion % Test,
   "org.scalatest"         %% "scalatest"              % ScalaTestVersion  % Test,
   "org.mockito"           %  "mockito-core"           % MockitoVersion    % Test,
@@ -109,6 +108,3 @@ val badConsoleFlags = Seq("-Xfatal-warnings", "-Ywarn-unused:imports")
 scalacOptions in (Compile, console) ~= (_.filterNot(badConsoleFlags.contains(_)))
 
 //enablePlugins(ScalafmtPlugin, JavaAppPackaging, GhpagesPlugin, MicrositesPlugin, TutPlugin)
-
-
-

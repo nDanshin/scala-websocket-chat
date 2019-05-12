@@ -8,7 +8,9 @@ import chat.api.domain.messages.{Message, MessageService}
 import chat.api.domain.rooms.{RoomService, RoomValidationInterpreter}
 import chat.api.domain.users.{UserService, UserValidationInterpreter}
 import chat.api.infrastructure.endpoint.{MessageEndpoints, RoomEndpoints, UserEndpoints, WebsocketEndpoints}
-import chat.api.infrastructure.repository.inmemory.{MessageRepositoryInMemoryInterpreter, RoomRepositoryInMemoryInterpreter, UserRepositoryInMemoryInterpreter}
+import chat.api.infrastructure.repository.doobie.DoobieUserRepositoryInterpreter
+import chat.api.infrastructure.repository.inmemory.{MessageRepositoryInMemoryInterpreter, RoomRepositoryInMemoryInterpreter}
+import doobie.util.ExecutionContexts
 import fs2.concurrent.Topic
 import io.circe.config.parser
 import org.http4s.server.{Router, Server => H4Server}
@@ -20,9 +22,12 @@ object Server extends IOApp {
   def createServer[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, H4Server[F]] = for {
     conf           <- Resource.liftF(parser.decodePathF[F, ChatConfig]("chat-api"))
     messageTopic   <- Resource.liftF(Topic[F, Message](Message.empty))
+    connectEc      <- ExecutionContexts.fixedThreadPool(conf.db.connections.poolSize)
+    transactEc     <- ExecutionContexts.cachedThreadPool[F]
+    xa             <- DatabaseConfig.dbTransactor(conf.db, connectEc, transactEc)
 
     roomRepo       = RoomRepositoryInMemoryInterpreter[F]()
-    userRepo       = UserRepositoryInMemoryInterpreter[F]()
+    userRepo       = DoobieUserRepositoryInterpreter[F](xa)
     messageRepo    = MessageRepositoryInMemoryInterpreter[F]()
 
     userValidation = UserValidationInterpreter[F](userRepo)
