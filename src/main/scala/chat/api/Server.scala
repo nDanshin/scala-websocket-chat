@@ -43,6 +43,7 @@ object Server extends IOApp {
       WebsocketEndpoints.endpoints[F](messageService)
 
     httpApp  = Router("/" -> services).orNotFound
+    _ <- Resource.liftF(DatabaseConfig.initializeDb(conf.db))
     server <- BlazeServerBuilder[F]
       .withWebSockets(true)
       .bindHttp(conf.server.port, conf.server.host)
