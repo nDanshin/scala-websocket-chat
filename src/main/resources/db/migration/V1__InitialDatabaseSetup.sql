@@ -10,12 +10,12 @@ create table users (
 create table rooms (
     id bigserial primary key,
     name varchar not null,
-    members varchar[] not null
+    members bigint[] not null
 );
 
 create table messages (
     id bigserial primary key,
-    userId bigserial references users(id),
-    roomId bigserial references rooms(id),
+    user_id bigint references users(id),
+    room_id bigint references rooms(id),
     content varchar not null
 );

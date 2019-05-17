@@ -8,8 +8,7 @@ import chat.api.domain.messages.{Message, MessageService}
 import chat.api.domain.rooms.{RoomService, RoomValidationInterpreter}
 import chat.api.domain.users.{UserService, UserValidationInterpreter}
 import chat.api.infrastructure.endpoint.{MessageEndpoints, RoomEndpoints, UserEndpoints, WebsocketEndpoints}
-import chat.api.infrastructure.repository.doobie.DoobieUserRepositoryInterpreter
-import chat.api.infrastructure.repository.inmemory.{MessageRepositoryInMemoryInterpreter, RoomRepositoryInMemoryInterpreter}
+import chat.api.infrastructure.repository.doobie.{DoobieMessageRepositoryInterpreter, DoobieRoomRepositoryInterpreter, DoobieUserRepositoryInterpreter}
 import doobie.util.ExecutionContexts
 import fs2.concurrent.Topic
 import io.circe.config.parser
@@ -26,9 +25,9 @@ object Server extends IOApp {
     transactEc     <- ExecutionContexts.cachedThreadPool[F]
     xa             <- DatabaseConfig.dbTransactor(conf.db, connectEc, transactEc)
 
-    roomRepo       = RoomRepositoryInMemoryInterpreter[F]()
     userRepo       = DoobieUserRepositoryInterpreter[F](xa)
-    messageRepo    = MessageRepositoryInMemoryInterpreter[F]()
+    roomRepo       = DoobieRoomRepositoryInterpreter[F](xa)
+    messageRepo    = DoobieMessageRepositoryInterpreter[F](xa)
 
     userValidation = UserValidationInterpreter[F](userRepo)
     roomValidation = RoomValidationInterpreter[F](roomRepo)
