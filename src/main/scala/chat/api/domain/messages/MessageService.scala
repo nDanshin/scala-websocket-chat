@@ -27,8 +27,8 @@ class MessageService[F[_]: Monad: ConcurrentEffect](repo: MessageRepositoryAlgeb
 
   def subscribe(userId: User.Id): Stream[F, Message] =
     messageTopic.subscribe(10)
-      .evalMap { message => roomRepository.getUserRooms(userId).map(rooms => (message, rooms)) }
-      .filter { case (_, rooms) => rooms.contains(userId) }
+      .evalMap { message => roomRepository.get(message.roomId).map(roomOpt => (message, roomOpt)) }
+      .filter { case (_, roomOpt) => roomOpt.exists(_.members.contains(userId)) }
       .map(_._1)
 }
 

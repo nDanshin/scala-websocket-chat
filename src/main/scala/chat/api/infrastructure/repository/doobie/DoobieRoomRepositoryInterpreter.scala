@@ -34,7 +34,7 @@ private object RoomSQL {
   def byRoomName(roomName: String): Query0[Room] = sql"""
     select id, name, members
     from rooms
-    where id = $roomName
+    where name = $roomName
   """.query
 
   def delete(roomId: Room.Id): Update0 = sql"""
