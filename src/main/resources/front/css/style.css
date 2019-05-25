@@ -1,0 +1,104 @@
+html {
+    background: #ddd;
+}
+
+body {
+    height: 100vh;
+    background: #ddd;
+}
+
+
+
+.container {
+    background: white;
+}
+
+/*пока что это решение для вертикального заполнения*/
+.fill { 
+    height: 100%;
+    box-sizing: border-box;
+}
+/*
+div {
+    border-left: 1px black solid;
+    border-right: 1px black solid;
+}*/
+
+.row.row-compact {
+    margin-left: 0;
+    margin-right: 0;
+}
+.row.row-compact > [class^="col"],
+.row.row-compact > [class*="col"] {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.avatar > [class^="nav-link"] {
+    padding-left: 0;
+    padding-right: 0;
+    height: 40px;
+    width: 40px;
+}
+
+/* Left navigation panel */
+.navigation {
+    flex: 0 0 35px;
+}
+
+/* Scrolling */
+.item { flex: 0 0 auto; }
+.scroll {
+    display: flex;
+    flex-wrap: nowrap; /* [1] */
+    overflow-x: auto; /* [1] */
+    -webkit-overflow-scrolling: touch; /* [4] */
+    -ms-overflow-style: -ms-autohiding-scrollbar; /* [5] */ 
+}  
+/*.scroll::-webkit-scrollbar { display: none; }*/
+
+.scroll::-webkit-scrollbar{
+    width: 5px;
+} 
+.scroll::-webkit-scrollbar-thumb{
+    border-width:1px 1px 1px 2px;
+    border-color: #777;
+    background-color: #ccc;
+    border-radius: 3px;
+}
+.scroll::-webkit-scrollbar-thumb:hover{
+    border-width: 1px 1px 1px 2px;
+    border-color: #555;
+    background-color: #777;
+}
+.scroll::-webkit-scrollbar-track{
+    border-width:0;
+}
+.scroll::-webkit-scrollbar-track:hover{
+    border-left: solid 1px #aaa;
+    background-color: #eee;
+}
+
+
+/********************CHAT BODY******************************/
+
+.height-58px {
+    height: 58px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.chat-body {
+    display: list-item;
+}
+
+.message-info {
+    display: inline-flex;
+}
+
+.message-info span i {
+    padding-left: 10px;
+}

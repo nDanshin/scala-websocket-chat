@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- for css -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>title</title>
+  </head>
+  <body class=bg-primary>
+    <div class="container p-0">
+        <div class="row row-compact">
+            <div class="col col-sm" style="height: 100vh;">
+                <div class="row row-compact fill">
+                <!-- Nav pills -->
+                <ul class="nav nav-pills flex-column navigation" role="tablist">
+                    <li class="nav-item"><a class="nav-link rounded-0 active" data-toggle="pill" href="#profile"><i class="far fa-user"></i></a></li>
+                    <li class="nav-item"><a class="nav-link rounded-0" data-toggle="pill" href="#chats"><i class="far fa-comment"></i></a></li>
+                    <li class="nav-item"><a class="nav-link rounded-0" data-toggle="pill" href="#contacts"><i class="far fa-address-book"></i></a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="col tab-content border-right">
+                    <div id="profile" class="tab-pane container p-0 fill active">
+                        <div class="d-flex flex-column">
+                            <div>profile</div>
+                            <div>2</div>
+                        </div>
+                    </div>
+
+                    <div id="chats" class="tab-pane container p-0 fill fade">
+                        <div class="d-flex flex-column">
+                            <form"><div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search" name="search-chat">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-outline-primary border" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div></form>
+                            <div class="flex-grow-1 scroll">
+                                    chats
+                            </div>
+                        </div>           
+                    </div>
+
+                    <div id="contacts" class="tab-pane container p-0 fill fade">
+                        <div class="d-flex flex-column">
+                            <form><div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search" name="search-chat">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-outline-primary border" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div></form>
+                            <div class="flex-grow-1 scroll"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <!--main chat content-->
+            <div class="col-sm d-flex flex-column" style="height: 100vh;">
+                
+                <ul class="nav nav-pills nav-flex-icons border-bottom" style="min-height: 40px;">
+                    <li class="nav-item d-sm-none">
+                        <a class="nav-link" href="#back"><i class="fas fa-arrow-left"></i></a>
+                    </li>
+                    <li class="nav-item avatar">
+                        <a class="nav-link d-sm-none" href="#">
+                            <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-5.jpg" class="rounded-circle z-depth-0" alt="avatar image" height="30">
+                        </a>
+                    </li>
+                    <li class="nav-item flex-grow-1">
+                        <a class="nav-link" href="#room">RoomInfo</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link rounded-0 dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-bars"></i></a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#">Leave</a>
+                            <a class="dropdown-item" href="#">Mute</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="chat-body flex-grow-1 scroll">
+                    <div class="message mt-2 d-flex">
+                        <img alt="Avatar" class="m-1 avatar rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                        <div class="message-body">
+                            <div class="message-info">
+                                <span><h6>Elon Musk</h6></span>
+                                <span><i class="far fa-clock"></i> 02:25 </span>
+                            </div>
+                            <div class="message-text">
+                                Falcon 9, mars, tesla.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message mt-2 d-flex">
+                        <img alt="Avatar" class="m-1 avatar rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                        <div class="message-body">
+                            <div class="message-info">
+                                <span><h6>Elon Musk</h6></span>
+                                <span><i class="far fa-clock"></i> 02:25 </span>
+                            </div>
+                            <div class="message-text">
+                                Falcon 9, mars, tesla.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message mt-2 d-flex">
+                        <img alt="Avatar" class="m-1 avatar rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                        <div class="message-body">
+                            <div class="message-info">
+                                <span><h6>Elon Musk</h6></span>
+                                <span><i class="far fa-clock"></i> 02:25 </span>
+                            </div>
+                            <div class="message-text">
+                                Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla.
+                                Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla. Falcon 9, mars, tesla.
+                                Falcon 9, mars, tesla. Falcon 9, mars, tesla.
+                            </div>
+                        </div>
+                    </div>   
+                </div>                            
+
+                <div class="w-100">
+                    <form action="" method="POST" autocomplete="off">
+                        <div class="input-group">
+                            <input id="text" class="mv-100 form-control" type="text" name="text" title="Type a message..." placeholder="Type a message..." required>    
+                            <div class="input-group-btn">
+                                <button class="btn btn-outline-primary rounded border w-100"><i class="fa fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!--right aside, user info and etc-->
+            <div class="col-sm-3 d-none">
+                <div>sidebar</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- for javascript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
