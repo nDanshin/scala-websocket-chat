@@ -4,6 +4,13 @@ scalaVersion := "2.12.8"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+enablePlugins(JavaAppPackaging, AshScriptPlugin)
+
+dockerBaseImage := "openjdk:8-jre-alpine"
+daemonUserUid in Docker := None
+daemonUser    in Docker := "daemon"
+packageName   in Docker := "scala-websocket-chat"
+
 val CatsVersion            = "1.6.0"
 val CirceVersion           = "0.11.1"
 val CirceConfigVersion     = "0.6.1"
@@ -106,5 +113,3 @@ scalacOptions ++= Seq(
 // Filter out compiler flags to make the repl experience functional...
 val badConsoleFlags = Seq("-Xfatal-warnings", "-Ywarn-unused:imports")
 scalacOptions in (Compile, console) ~= (_.filterNot(badConsoleFlags.contains(_)))
-
-//enablePlugins(ScalafmtPlugin, JavaAppPackaging, GhpagesPlugin, MicrositesPlugin, TutPlugin)

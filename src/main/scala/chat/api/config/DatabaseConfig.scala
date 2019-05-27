@@ -34,6 +34,7 @@ object DatabaseConfig {
     Flyway
       .configure()
       .dataSource(cfg.url, cfg.user, cfg.password)
+      .baselineOnMigrate(true)
       .load()
       .migrate()
   }.as(())
