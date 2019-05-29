@@ -14,6 +14,7 @@ import fs2.concurrent.Topic
 import io.circe.config.parser
 import org.http4s.server.{Router, Server => H4Server}
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.middleware.CORS
 import org.http4s.implicits._
 import tsec.passwordhashers.jca.BCrypt
 
@@ -36,9 +37,9 @@ object Server extends IOApp {
     userService    = UserService[F](userRepo, userValidation)
     messageService = MessageService[F](messageRepo, userValidation, roomValidation, roomRepo, messageTopic)
 
-    services       = RoomEndpoints.endpoints[F](roomService, userService) <+>
-      MessageEndpoints.endpoints[F](messageService, userService, roomService) <+>
-      UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F]) <+>
+    services       = CORS(RoomEndpoints.endpoints[F](roomService, userService)) <+>
+      CORS(MessageEndpoints.endpoints[F](messageService, userService, roomService)) <+>
+      CORS(UserEndpoints.endpoints[F, BCrypt](userService, BCrypt.syncPasswordHasher[F])) <+>
       WebsocketEndpoints.endpoints[F](messageService)
 
     httpApp  = Router("/" -> services).orNotFound
