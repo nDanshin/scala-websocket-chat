@@ -1,6 +1,7 @@
 name         := "scala-websocket-chat"
 version      := "0.0.1"
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.9"
+crossScalaVersions := Seq("2.12.9", "2.13.0")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -11,53 +12,52 @@ daemonUserUid in Docker := None
 daemonUser    in Docker := "daemon"
 packageName   in Docker := "scala-websocket-chat"
 
-val CatsVersion            = "1.6.0"
-val CirceVersion           = "0.11.1"
-val CirceConfigVersion     = "0.6.1"
-val DoobieVersion          = "0.6.0"
-val EnumeratumCirceVersion = "1.5.21"
-val H2Version              = "1.4.199"
-val Http4sVersion          = "0.20.0-M7"
-val LogbackVersion         = "1.2.3"
-val ScalaCheckVersion      = "1.14.0"
-val ScalaTestVersion       = "3.0.7"
-val MockitoVersion         = "2.6.6"
-val FlywayVersion          = "5.2.4"
-val TsecVersion            = "0.1.0-M3"
-val supertagged            = "1.4"
+val CatsVersion = "2.0.0"
+val CirceVersion = "0.12.3"
+val CirceGenericExVersion = "0.12.2"
+val CirceConfigVersion = "0.7.0"
+val DoobieVersion = "0.8.4"
+val EnumeratumCirceVersion = "1.5.22"
+val H2Version = "1.4.200"
+val Http4sVersion = "0.21.0-M5"
+val KindProjectorVersion = "0.10.3"
+val LogbackVersion = "1.2.3"
+val ScalaCheckVersion = "1.14.2"
+val ScalaTestVersion = "3.2.0-M1"
+val ScalaTestPlusVersion = "3.1.0.0-RC2"
+val FlywayVersion = "6.0.7"
+val TsecVersion = "0.2.0-M2"
 
 libraryDependencies ++= Seq(
-  "org.typelevel"         %% "cats-core"              % CatsVersion,
-  "io.circe"              %% "circe-generic"          % CirceVersion,
-  "io.circe"              %% "circe-literal"          % CirceVersion,
-  "io.circe"              %% "circe-generic-extras"   % CirceVersion,
-  "io.circe"              %% "circe-parser"           % CirceVersion,
-  "io.circe"              %% "circe-java8"            % CirceVersion,
-  "io.circe"              %% "circe-config"           % CirceConfigVersion,
-  "org.tpolecat"          %% "doobie-core"            % DoobieVersion,
-  "org.tpolecat"          %% "doobie-postgres"        % DoobieVersion,
-  "org.tpolecat"          %% "doobie-scalatest"       % DoobieVersion,
-  "org.tpolecat"          %% "doobie-hikari"          % DoobieVersion,
-  "com.beachape"          %% "enumeratum-circe"       % EnumeratumCirceVersion,
-  "org.http4s"            %% "http4s-blaze-server"    % Http4sVersion,
-  "org.http4s"            %% "http4s-circe"           % Http4sVersion,
-  "org.http4s"            %% "http4s-dsl"             % Http4sVersion,
-  "ch.qos.logback"        %  "logback-classic"        % LogbackVersion,
-  "org.flywaydb"          %  "flyway-core"            % FlywayVersion,
-  "org.rudogma"           %% "supertagged"            % supertagged,
-  "org.http4s"            %% "http4s-blaze-client"    % Http4sVersion     % Test,
-  "org.scalacheck"        %% "scalacheck"             % ScalaCheckVersion % Test,
-  "org.scalatest"         %% "scalatest"              % ScalaTestVersion  % Test,
-  "org.mockito"           %  "mockito-core"           % MockitoVersion    % Test,
-
+  "org.typelevel" %% "cats-core" % CatsVersion,
+  "io.circe" %% "circe-generic" % CirceVersion,
+  "io.circe" %% "circe-literal" % CirceVersion,
+  "io.circe" %% "circe-generic-extras" % CirceGenericExVersion,
+  "io.circe" %% "circe-parser" % CirceVersion,
+  "io.circe" %% "circe-config" % CirceConfigVersion,
+  "org.tpolecat" %% "doobie-core" % DoobieVersion,
+  "org.tpolecat" %% "doobie-h2" % DoobieVersion,
+  "org.tpolecat" %% "doobie-scalatest" % DoobieVersion,
+  "org.tpolecat" %% "doobie-hikari" % DoobieVersion,
+  "com.beachape" %% "enumeratum-circe" % EnumeratumCirceVersion,
+  "com.h2database" % "h2" % H2Version,
+  "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
+  "org.http4s" %% "http4s-circe" % Http4sVersion,
+  "org.http4s" %% "http4s-dsl" % Http4sVersion,
+  "ch.qos.logback" % "logback-classic" % LogbackVersion,
+  "org.flywaydb" % "flyway-core" % FlywayVersion,
+  "org.http4s" %% "http4s-blaze-client" % Http4sVersion % Test,
+  "org.scalacheck" %% "scalacheck" % ScalaCheckVersion % Test,
+  "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
+  "org.scalatestplus" %% "scalatestplus-scalacheck" % ScalaTestPlusVersion % Test,
   // Authentication dependencies
-  "io.github.jmcardon"    %% "tsec-common"            % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-password"          % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-mac"               % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-signatures"        % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-jwt-mac"           % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-jwt-sig"           % TsecVersion,
-  "io.github.jmcardon"    %% "tsec-http4s"            % TsecVersion
+  "io.github.jmcardon" %% "tsec-common" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-password" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-mac" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-signatures" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-jwt-mac" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-jwt-sig" % TsecVersion,
+  "io.github.jmcardon" %% "tsec-http4s" % TsecVersion,
 )
 
 scalacOptions ++= Seq(
